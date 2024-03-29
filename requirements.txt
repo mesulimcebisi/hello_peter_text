@@ -3,9 +3,10 @@ dash-bootstrap-components
 pandas
 numpy
 plotly
-spacy
+spaCy
 torch
 transformers
 gunicorn
+en_core_web_sm
 
 
