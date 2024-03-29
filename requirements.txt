@@ -4,7 +4,7 @@ pandas
 numpy
 plotly
 spacy
-en_core_web_sm
+en-core-web-sm
 torch
 transformers
 gunicorn
