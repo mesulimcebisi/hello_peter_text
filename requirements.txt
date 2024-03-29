@@ -6,5 +6,6 @@ plotly
 spacy
 torch
 transformers
+gunicorn
 
 
