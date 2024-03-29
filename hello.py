@@ -9,8 +9,8 @@ import dash_bootstrap_components as dbc
 from datetime import datetime
 import plotly.express as px
 import spacy
-import en_core_web_sm
-nlp = en_core_web_sm.load()
+spacy.cli.download("en_core_web_sm")
+nlp = spacy.load("en_core_web_sm")
 from spacy.lang.en.stop_words import STOP_WORDS
 from string import punctuation
 from collections import Counter
@@ -349,11 +349,6 @@ def check_data(datt, col, clis):
               Input('clist', 'value'))
 def text_area(data, mlist):
     df = pd.read_json(StringIO(data), orient='split')
-    try:
-        nlp = spacy.load("en_core_web_sm")
-    except:  # If not present, we download
-        spacy.cli.download("en_core_web_sm")
-        nlp = spacy.load("en_core_web_sm")
     col = df[df['Product'] == mlist]['Review']
     nlp_text = col.str.cat(sep=" ")
     nlp_docs = nlp(nlp_text)
