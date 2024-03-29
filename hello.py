@@ -8,7 +8,6 @@ from dash import dcc,html,Input,State,Output,Dash
 import dash_bootstrap_components as dbc
 from datetime import datetime
 import plotly.express as px
-import sklearn
 import spacy
 nlp = spacy.load("en_core_web_sm")
 from spacy.lang.en.stop_words import STOP_WORDS
