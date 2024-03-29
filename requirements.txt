@@ -7,6 +7,6 @@ spaCy
 torch
 transformers
 gunicorn
-en-core-web-sm
+
 
 
