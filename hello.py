@@ -349,6 +349,11 @@ def check_data(datt, col, clis):
               Input('clist', 'value'))
 def text_area(data, mlist):
     df = pd.read_json(StringIO(data), orient='split')
+    try:
+        nlp = spacy.load("en_core_web_sm")
+    except:  # If not present, we download
+        spacy.cli.download("en_core_web_sm")
+        nlp = spacy.load("en_core_web_sm")
     col = df[df['Product'] == mlist]['Review']
     nlp_text = col.str.cat(sep=" ")
     nlp_docs = nlp(nlp_text)
