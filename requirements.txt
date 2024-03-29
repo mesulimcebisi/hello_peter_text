@@ -1,0 +1,9 @@
+dash
+pandas
+numpy
+plotly
+spacy
+heapq
+torch
+transformers
+gunicorn
