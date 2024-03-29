@@ -9,7 +9,8 @@ import dash_bootstrap_components as dbc
 from datetime import datetime
 import plotly.express as px
 import spacy
-nlp = spacy.load("en_core_web_sm")
+import en_core_web_sm
+nlp = en_core_web_sm.load()
 from spacy.lang.en.stop_words import STOP_WORDS
 from string import punctuation
 from collections import Counter
