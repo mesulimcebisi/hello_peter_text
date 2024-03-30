@@ -7,6 +7,6 @@ spacy
 torch
 transformers
 gunicorn
-
+nltk
 
 
