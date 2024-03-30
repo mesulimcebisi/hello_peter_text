@@ -37,7 +37,7 @@ term_list = ['account', 'bank', 'Account', 'Bank']
 stop_words = stop_words + term_list
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.PULSE], suppress_callback_exceptions=True)
-app.title = "Customer reviews from Hello-peter"
+server = app.server
 
 # styling the sidebar
 SIDEBAR_STYLE = {
@@ -407,4 +407,4 @@ def abstract_summa(n_clicks, text):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
