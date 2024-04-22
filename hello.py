@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import dash
@@ -14,11 +15,14 @@ from string import punctuation
 from collections import Counter
 from heapq import nlargest
 import torch
-from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config
+from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config, pipeline
 from io import StringIO
 import nltk
 from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize, sent_tokenize
+
+os.chdir(r"C:\Users\mesul\Documents\Python Scripts")
+
 
 
 df = pd.read_excel('class.xlsx')
