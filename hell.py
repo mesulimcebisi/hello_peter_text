@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import numpy as np
 import dash
@@ -21,7 +20,7 @@ import nltk
 from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize, sent_tokenize
 
-os.chdir(r"C:\Users\mesul\Documents\Python Scripts")
+
 
 
 
