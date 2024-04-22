@@ -9,17 +9,20 @@ import dash_bootstrap_components as dbc
 from datetime import datetime
 import plotly.express as px
 import spacy
-spacy.cli.download("en_core_web_sm")
-nlp = spacy.load("en_core_web_sm")
 from spacy.lang.en.stop_words import STOP_WORDS
 from string import punctuation
 from collections import Counter
 from heapq import nlargest
 import torch
-from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config
+from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config, pipeline
 from io import StringIO
+import nltk
+from nltk.tag import pos_tag
+from nltk.tokenize import word_tokenize, sent_tokenize
 
 os.chdir(r"C:\Users\mesul\Documents\Python Scripts")
+
+
 
 df = pd.read_excel('class.xlsx')
 df_piv = df.groupby(['Date1', 'Bank', 'Sentiment']).size().reset_index().sort_values(by='Date1')
@@ -34,7 +37,7 @@ term_list = ['account', 'bank', 'Account', 'Bank']
 stop_words = stop_words + term_list
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.PULSE], suppress_callback_exceptions=True)
-server = app.server
+app.title = "Customer reviews from Hello-peter"
 
 # styling the sidebar
 SIDEBAR_STYLE = {
@@ -212,7 +215,7 @@ def render_page_content(pathname):
 
 dff = df_piv_w.copy()
 fig = px.line(dff, x='Date1', y='% of Disappointment',
-              title="Monthly Proportion of Negative Reviews Relative to Total Reviews", color='Bank',
+              title='Monthly Proportion of Negative Reviews', color='Bank',
               labels={'variable': 'Sentiment', 'value': '%', 'Date1': 'Date', '% of Disappointment': '%',
                       'Bank': 'Top 5 banks'})
 fig.update_traces(mode='lines+markers')
@@ -351,39 +354,36 @@ def text_area(data, mlist):
     df = pd.read_json(StringIO(data), orient='split')
     col = df[df['Product'] == mlist]['Review']
     nlp_text = col.str.cat(sep=" ")
-    nlp_docs = nlp(nlp_text)
-    keywordz = []
-    pos_list = ['NOUN', 'VERB']
+    nlp_docs = sent_tokenize(nlp_text)
+    lis_word = []
+    for sent in sent_tokenize(nlp_text):
+        for word in word_tokenize(sent):
+            if word.lower() not in stop_words and word not in punctuation and len(word) >= 3 and word.isalpha():
+                lis_word.append(word)
+    keywordz_freq = Counter(lis_word)
 
-    for sent in nlp_docs.sents:
-        for word in sent:
-            if word.text in stop_words or word.text in punctuation or len(word.text) < 3:
-                continue
-            if word.pos_ in pos_list:
-                keywordz.append(word.text)
-
-    keywordz_freq = Counter(keywordz)
     if keywordz_freq:
         key = keywordz_freq.most_common(1)[0][1]
         for item in keywordz_freq.keys():
             keywordz_freq[item] = (keywordz_freq[item] / key)
 
         sentence_strength = {}
-        for sent in nlp_docs.sents:
-            for word in sent:
-                if word.text in keywordz_freq.keys():
+        for sent in sent_tokenize(nlp_text):
+            for word in word_tokenize(sent):
+                if word in keywordz_freq.keys():
                     if sent in sentence_strength.keys():
-                        sentence_strength[sent] += keywordz_freq[word.text]
+                        sentence_strength[sent] += keywordz_freq[word]
                     else:
-                        sentence_strength[sent] = keywordz_freq[word.text]
+                        sentence_strength[sent] = keywordz_freq[word]
 
         top5 = nlargest(5, sentence_strength, key=sentence_strength.get)
-        fin_sentence = [str(i + 1) + ". " + str(sent).strip() for i, sent in enumerate(top5)]
+        fin_sentence = [str(i + 1) + ". " + str(sent).strip()
+                        for i, sent in enumerate(top5)]
+
     else:
         fin_sentence = []
 
-    return '\n '.join(fin_sentence)
-
+    return ' '.join(fin_sentence)
 
 @app.callback(
     Output('abstract', 'value'),
@@ -393,15 +393,9 @@ def text_area(data, mlist):
 def abstract_summa(n_clicks, text):
     if n_clicks is not None and n_clicks > 0 and text:
         try:
-            model = T5ForConditionalGeneration.from_pretrained('t5-small')
-            tokenizer = T5Tokenizer.from_pretrained('t5-small')
-            device = torch.device('cpu')
-            preprocessed_text = text.strip().replace('\n', '')
-            t5_input_text = 'summarize: ' + preprocessed_text
-            tokenized_text = tokenizer.encode(t5_input_text, return_tensors='pt', max_length=512).to(device)
-            summary_ids = model.generate(tokenized_text, min_length=30, max_length=120)
-            summari = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-            summary = '. '.join(map(lambda s: s.strip().capitalize(), summari.split('.')))
+            t5_summarizer1 = pipeline("summarization", model="t5-large")
+            bart1 = t5_summarizer1(text, max_length=250, min_length=50, do_sample=False)[0]['summary_text']
+            summary = bart1
         except Exception as e:
             print(f"Error: {e}")
             summary = "Error occurred while summarizing the text."
@@ -411,5 +405,6 @@ def abstract_summa(n_clicks, text):
     return summary
 
 
+
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
