@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import dash
 import re
+import openpyxl
 from datetime import datetime as dt
 from dash import dcc,html,Input,State,Output,Dash
 import dash_bootstrap_components as dbc
@@ -37,7 +38,7 @@ term_list = ['account', 'bank', 'Account', 'Bank']
 stop_words = stop_words + term_list
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.PULSE], suppress_callback_exceptions=True)
-app.title = "Customer reviews from Hello-peter"
+server = app.server
 
 # styling the sidebar
 SIDEBAR_STYLE = {
