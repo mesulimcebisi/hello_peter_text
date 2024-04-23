@@ -17,6 +17,7 @@ import torch
 from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config, pipeline
 from io import StringIO
 import nltk
+nltk.download('punkt')
 from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize, sent_tokenize
 
